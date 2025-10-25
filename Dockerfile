@@ -10,6 +10,6 @@ RUN ls
  
 # Production Stage
 FROM nginx:stable-alpine AS production
-COPY --from=build /app /usr/share/nginx/html
+COPY --from=build /app/.env.template /usr/share/nginx/html
+COPY --from=build /app/dist /usr/share/nginx/html
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]

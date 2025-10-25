@@ -1,15 +1,23 @@
 services:
   web:
-    image: ''
+    image: cloud-shop:latest
     restart: always
+    container_name: cloud-shop-app
     ports:
-      - "3000:3000"
-    volumes:
-     - .:/app
-     - ./node_modules:/app/node_modules
-    environment:
-      NODE_ENV: development
-      VITE_API_URL: http://localhost:3000/api
+      - "80:80"
+    networks:
+      - cloud-shop-pool
+    build:
+      context: .
+    env_file:
+      - .env
     stdin_open: true
-    tty: true
-    command: npm start
+    tty: true    
+    command: sh -c "export VITE_API_URL=$VITE_API_URL && envsubst < /usr/share/nginx/html/.env.template > /usr/share/nginx/html/.env && exec nginx -g 'daemon off;'"
+networks:
+  cloud-shop-pool:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 9.8.7.0/24
